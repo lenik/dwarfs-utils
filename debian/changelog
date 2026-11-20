@@ -9,6 +9,11 @@ dwarfs-utils (0.1.0) unstable; urgency=medium
   * Add dwarfs-archiver (create/unarchive/convert, open viewer option).
   * Split Debian packages: dwarfs-fm, viewer, archiver, caja-dwarfs,
     nemo-dwarfs.
+  * Debian: package Tauri binaries; ignore missing shlib info for local
+    libbas-c; depend on libbas-c1.
+  * Drop MinGW packaging for this Linux desktop suite (blocks release on
+    host with mingw-gcc).
+  * Recommend dwarfs tools instead of hard Depends (often unpackaged).
 
  -- Lenik (谢继雷) <lenik@bodz.net>  Fri, 20 Nov 2026 19:00:02 +0800
 

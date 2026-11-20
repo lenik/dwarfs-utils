@@ -29,9 +29,10 @@ Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
- dwarfs | dwarfs-tools,
+ libbas-c1,
  fuse3
 Recommends:
+ dwarfs | dwarfs-tools,
  dwarfs-viewer,
  dwarfs-archiver,
  7zip | p7zip-full,
@@ -39,6 +40,7 @@ Recommends:
 Description: File-manager helper for DwarFS images
  dwarfs-fm mounts and unmounts DwarFS images at sibling directories and
  launches dwarfs-viewer / dwarfs-archiver for Caja and Nemo plugins.
+ Runtime needs mkdwarfs/dwarfs/dwarfsck/dwarfsextract from DwarFS.
 
 Package: dwarfs-viewer
 Architecture: any
@@ -46,8 +48,9 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends},
  dwarfs-fm,
- dwarfs | dwarfs-tools,
  fuse3
+Recommends:
+ dwarfs | dwarfs-tools
 Description: GUI viewer for DwarFS filesystem images
  Tauri-based viewer with metadata, content navigator (FUSE mount), and
  integrity (dwarfsck) tabs. Default handler for .dwarfs / .dwfs / .dw.
@@ -57,9 +60,9 @@ Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
- dwarfs-fm,
- dwarfs | dwarfs-tools
+ dwarfs-fm
 Recommends:
+ dwarfs | dwarfs-tools,
  7zip | p7zip-full,
  squashfs-tools,
  dwarfs-viewer

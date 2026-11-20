@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+# Prefer distro libbas-c over a local /usr/local install during packaging.
+export PKG_CONFIG_PATH = /usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig:/usr/share/pkgconfig
 # Keep GUI artifacts under the source tree (ignore ambient CARGO_TARGET_DIR).
 unexport CARGO_TARGET_DIR
 
@@ -20,6 +22,15 @@ override_dh_auto_install:
 		$(CURDIR)/debian/tmp/usr/bin/dwarfs-viewer
 	install -m755 apps/dwarfs-archiver/src-tauri/target/release/dwarfs-archiver \
 		$(CURDIR)/debian/tmp/usr/bin/dwarfs-archiver
+
+# Rust release binaries have no .debug_info for dwz.
+override_dh_dwz:
+	dh_dwz -a -Xdwarfs-viewer -Xdwarfs-archiver || true
+
+# libbas-c may resolve from /usr/local on this builder; still Depend on
+# packaged libbas-c1 via debian/control.
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
 
 # Autotools leftovers must not run after Meson conversion.
 override_dh_autoreconf:
