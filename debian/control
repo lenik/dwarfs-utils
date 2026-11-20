@@ -1,18 +1,108 @@
 Source: dwarfs-utils
 Section: utils
 Priority: optional
-Maintainer: Lenik <dwarfs-utils@bodz.net>
-Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkgconf, libbas-c-dev, asciidoctor
+Maintainer: Lenik (谢继雷) <dwarfs-utils@bodz.net>
+Build-Depends:
+ debhelper-compat (= 13),
+ meson,
+ ninja-build,
+ pkgconf,
+ libbas-c-dev,
+ asciidoctor,
+ libcaja-extension-dev,
+ libnemo-extension-dev,
+ libgtk-3-dev,
+ cargo,
+ rustc,
+ nodejs,
+ npm,
+ libwebkit2gtk-4.1-dev,
+ librsvg2-dev,
+ patchelf,
+ libssl-dev
 Standards-Version: 4.6.0
 Homepage: https://github.com/lenik/dwarfs-utils
 Rules-Requires-Root: no
 
-Package: dwarfs-utils
+Package: dwarfs-fm
 Architecture: any
 Depends:
-    ${shlibs:Depends},
-    ${misc:Depends}
-Description: Simple C CLI project template with example app
- dwarfs-utils is a Meson-based template for small C command-line utilities
- (no shared/static library packaging). It ships the dwarfs-utils example
- application, AsciiDoc man pages, bash completion, and Debian packaging.
+ ${shlibs:Depends},
+ ${misc:Depends},
+ dwarfs | dwarfs-tools,
+ fuse3
+Recommends:
+ dwarfs-viewer,
+ dwarfs-archiver,
+ 7zip | p7zip-full,
+ squashfs-tools
+Description: File-manager helper for DwarFS images
+ dwarfs-fm mounts and unmounts DwarFS images at sibling directories and
+ launches dwarfs-viewer / dwarfs-archiver for Caja and Nemo plugins.
+
+Package: dwarfs-viewer
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ dwarfs-fm,
+ dwarfs | dwarfs-tools,
+ fuse3
+Description: GUI viewer for DwarFS filesystem images
+ Tauri-based viewer with metadata, content navigator (FUSE mount), and
+ integrity (dwarfsck) tabs. Default handler for .dwarfs / .dwfs / .dw.
+
+Package: dwarfs-archiver
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ dwarfs-fm,
+ dwarfs | dwarfs-tools
+Recommends:
+ 7zip | p7zip-full,
+ squashfs-tools,
+ dwarfs-viewer
+Description: GUI archiver for creating and converting DwarFS images
+ Interactive progress UI around mkdwarfs / dwarfsextract, including
+ convert-from-zip/7z/squashfs and optional open-in-viewer when done.
+
+Package: caja-dwarfs
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ caja,
+ dwarfs-fm,
+ dwarfs-viewer,
+ dwarfs-archiver
+Description: Caja context-menu plugin for DwarFS
+ Adds a DwarFS submenu: Open, Archive, Unarchive, Check integrity,
+ Convert to DwarFS, Mount, and Unmount.
+
+Package: nemo-dwarfs
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ nemo,
+ dwarfs-fm,
+ dwarfs-viewer,
+ dwarfs-archiver
+Description: Nemo context-menu plugin for DwarFS
+ Adds a DwarFS submenu: Open, Archive, Unarchive, Check integrity,
+ Convert to DwarFS, Mount, and Unmount.
+
+Package: dwarfs-utils
+Architecture: all
+Depends:
+ ${misc:Depends},
+ dwarfs-fm,
+ dwarfs-viewer,
+ dwarfs-archiver
+Recommends:
+ caja-dwarfs,
+ nemo-dwarfs
+Description: Desktop suite for DwarFS images
+ Metapackage pulling in the DwarFS Viewer, Archiver, and file-manager
+ helper. File-manager plugins are recommended separately.

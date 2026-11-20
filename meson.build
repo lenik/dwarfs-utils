@@ -35,6 +35,7 @@ fs = import('fs')
 prefix = get_option('prefix')
 bindir = prefix / get_option('bindir')
 datadir = prefix / get_option('datadir')
+libdir = prefix / get_option('libdir')
 mandir = prefix / get_option('mandir')
 localedir = prefix / get_option('localedir')
 pkgdocdir = datadir / 'doc' / meson.project_name()
@@ -45,6 +46,7 @@ config_h.set_quoted('PROJECT_AUTHOR', project_author)
 config_h.set_quoted('PROJECT_EMAIL', project_email)
 config_h.set('PROJECT_YEAR', project_year)
 config_h.set_quoted('LOCALEDIR', localedir)
+config_h.set_quoted('TEXT_DOMAIN', meson.project_name())
 
 configure_file(
     output: 'config.h',
@@ -52,33 +54,72 @@ configure_file(
 )
 
 bas_c_dep = dependency('bas-c', required: true)
-bas_args = ['-DLOGGER_NAME=' + meson.project_name(), '-DTEXT_DOMAIN=' + meson.project_name()]
+bas_args = [
+    '-DLOGGER_NAME=dwarfs_fm',
+    '-DGETTEXT_PACKAGE="' + meson.project_name() + '"',
+]
 
 inc = include_directories('src', '.')
 
-app_sources = [
-    'src/dwarfs-utils.c',
-]
-
 common_sources = [
-    'src/commons.c',
+    'src/paths.c',
 ]
 
-foreach source : app_sources
-    name = fs.stem(source.split('/')[-1])
-    executable(
-        name,
-        [source] + common_sources,
+executable(
+    'dwarfs-fm',
+    ['src/dwarfs-fm.c'] + common_sources,
+    include_directories: inc,
+    dependencies: [bas_c_dep],
+    c_args: bas_args,
+    install: true,
+    install_dir: bindir,
+)
+
+caja_dep = dependency('libcaja-extension', required: false)
+if caja_dep.found()
+    caja_ext_dir = caja_dep.get_variable(pkgconfig: 'extensiondir')
+    shared_module(
+        'caja-dwarfs',
+        'src/plugins/caja/caja-dwarfs.c',
         include_directories: inc,
-        dependencies: [bas_c_dep],
+        dependencies: [caja_dep],
         c_args: bas_args,
+        name_prefix: '',
         install: true,
-        install_dir: bindir,
+        install_dir: caja_ext_dir,
     )
-endforeach
+endif
+
+nemo_dep = dependency('libnemo-extension', required: false)
+if nemo_dep.found()
+    nemo_ext_dir = nemo_dep.get_variable(pkgconfig: 'extensiondir')
+    shared_module(
+        'nemo-dwarfs',
+        'src/plugins/nemo/nemo-dwarfs.c',
+        include_directories: inc,
+        dependencies: [nemo_dep],
+        c_args: bas_args,
+        name_prefix: '',
+        install: true,
+        install_dir: nemo_ext_dir,
+    )
+endif
+
+install_data(
+    'data/mime/dwarfs-utils.xml',
+    install_dir: datadir / 'mime' / 'packages',
+)
+
+install_data(
+    [
+        'data/applications/dwarfs-viewer.desktop',
+        'data/applications/dwarfs-archiver.desktop',
+    ],
+    install_dir: datadir / 'applications',
+)
 
 bash_files = [
-    'dwarfs-utils.bash',
+    'dwarfs-fm.bash',
 ]
 
 foreach file : bash_files
@@ -99,25 +140,6 @@ install_data(
     install_dir: pkgdocdir,
 )
 
-custom_target(
-    'dwarfs-utils-man',
-    input: 'man/dwarfs-utils.adoc',
-    output: 'dwarfs-utils.1',
-    command: [
-        asciidoctor,
-        '-b', 'manpage',
-        '-a', 'project-version=' + meson.project_version(),
-        '-a', 'project-year=@0@'.format(project_year),
-        '-a', 'project-author=' + project_author,
-        '-a', 'project-email=' + project_email,
-        '-o', '@OUTPUT@',
-        '@INPUT@',
-    ],
-    build_by_default: true,
-    install: true,
-    install_dir: mandir / 'man1',
-)
-
 subdir('tests')
 
 run_target(
@@ -134,38 +156,49 @@ run_target(
 run_target(
     'install-symlinks',
     command: [
-        'bash',
-        '-euc', '''
-            prefix="@0@"
-            bindir="@1@"
-            datadir="@2@"
-            mandir="@3@"
-            mkdir -p "$bindir" "$datadir/bash-completion/completions" "$mandir/man1"
-            sudo ln -sfn "@BUILD_ROOT@/dwarfs-utils" "$bindir/dwarfs-utils"
-            sudo ln -sfn "@BUILD_ROOT@/dwarfs-utils.1" "$mandir/man1/dwarfs-utils.1"
-            sudo ln -sfn "@SOURCE_ROOT@/dwarfs-utils.bash" "$datadir/bash-completion/completions/dwarfs-utils"
-            printf "Symlinks installed under %s\n" "$prefix"
-        '''.format(get_option('prefix'), bindir, datadir, mandir),
+        find_program('bash'),
+        meson.project_source_root() / 'scripts' / 'install-symlinks.sh',
+        get_option('prefix'),
+        bindir,
+        datadir,
+        mandir,
+        meson.project_build_root(),
+        meson.project_source_root(),
     ],
 )
 
 run_target(
     'uninstall-symlinks',
     command: [
-        'bash',
-        '-euc', '''
-            for p in \
-                "@1@/dwarfs-utils" \
-                "@3@/man1/dwarfs-utils.1" \
-                "@2@/bash-completion/completions/dwarfs-utils"
-            do
-                if [ -L "$p" ]; then
-                    sudo rm -f "$p"
-                    printf "Removed %s\n" "$p"
-                else
-                    printf "Skipped (not a symlink): %s\n" "$p"
-                fi
-            done
-        '''.format(get_option('prefix'), bindir, datadir, mandir),
+        find_program('bash'),
+        meson.project_source_root() / 'scripts' / 'uninstall-symlinks.sh',
+        get_option('prefix'),
+        bindir,
+        datadir,
+        mandir,
     ],
 )
+
+puffs = [
+    'dwarfs-fm',
+]
+foreach puff : puffs
+  custom_target(
+    puff + '-man',
+    input: 'man' / (puff + '.adoc'),
+    output: puff + '.1',
+    command: [
+      asciidoctor,
+      '-b', 'manpage',
+      '-a', 'project-version=' + meson.project_version(),
+      '-a', 'project-year=@0@'.format(project_year),
+      '-a', 'project-author=' + project_author,
+      '-a', 'project-email=' + project_email,
+      '-o', '@OUTPUT@',
+      '@INPUT@',
+    ],
+    build_by_default: true,
+    install: true,
+    install_dir: mandir / 'man1',
+  )
+endforeach

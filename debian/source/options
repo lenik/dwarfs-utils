@@ -1,0 +1,6 @@
+# Exclude heavy/generated GUI build trees from the Debian source package.
+tar-ignore = apps/*/node_modules
+tar-ignore = apps/*/dist
+tar-ignore = apps/*/src-tauri/target
+tar-ignore = apps/*/src-tauri/gen
+tar-ignore = build

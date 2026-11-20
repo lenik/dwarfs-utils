@@ -126,3 +126,12 @@ stamp-po
 stats/
 target/
 v-store
+apps/*/dist/
+apps/*/src-tauri/target/
+apps/*/src-tauri/gen/
+apps/*/node_modules/
+debian/dwarfs-fm/
+debian/dwarfs-viewer/
+debian/dwarfs-archiver/
+debian/caja-dwarfs/
+debian/nemo-dwarfs/

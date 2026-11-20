@@ -1,0 +1,55 @@
+= dwarfs-fm(1)
+:doctype: manpage
+:manmanual: dwarfs-utils
+:mansource: dwarfs-utils {project-version}
+:man-linkstyle: blue R <>
+
+== NAME
+
+dwarfs-fm - file-manager helper for DwarFS images
+
+== SYNOPSIS
+
+*dwarfs-fm* [_OPTION_]... _COMMAND_ [_PATH_]...
+
+== DESCRIPTION
+
+*dwarfs-fm* is invoked by Caja/Nemo context-menu plugins and desktop entries.
+It mounts and unmounts DwarFS images, and launches *dwarfs-viewer* /
+*dwarfs-archiver*.
+
+=== Commands
+
+*open*:: Open a DwarFS image in the viewer.
+
+*archive*:: Create a DwarFS image from directories/files (archiver GUI).
+
+*unarchive*:: Extract a DwarFS image (archiver GUI).
+
+*check*:: Open the viewer on the integrity tab.
+
+*convert*:: Convert another archive type to DwarFS (archiver GUI).
+
+*mount*:: FUSE-mount the image at a sibling directory named like the image
+without the `.dw` / `.dwfs` / `.dwarfs` suffix.
+
+*unmount*:: Unmount that sibling directory, or a directory that is already a
+DwarFS mount point.
+
+== OPTIONS
+
+*-v*, *--verbose*:: Increase log verbosity.
+
+*-q*, *--quiet*:: Decrease log verbosity.
+
+*-h*, *--help*:: Show help and exit.
+
+*--version*:: Show version and exit.
+
+== AUTHORS
+
+{project-author} <{project-email}>
+
+== COPYRIGHT
+
+Copyright (C) {project-year} {project-author}. License AGPL-3.0-or-later.

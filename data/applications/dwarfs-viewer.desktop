@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=DwarFS Viewer
+Comment=Browse and inspect DwarFS filesystem images
+Comment[zh_CN]=浏览与检查 DwarFS 文件系统镜像
+Exec=dwarfs-viewer %f
+Icon=package-x-generic
+Terminal=false
+Type=Application
+Categories=Utility;FileTools;Viewer;
+MimeType=application/x-dwarfs-image;
+StartupNotify=true

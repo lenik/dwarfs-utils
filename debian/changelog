@@ -1,3 +1,17 @@
+dwarfs-utils (0.1.0) unstable; urgency=medium
+
+  * Desktop suite: Viewer, Archiver, Caja/Nemo plugins, dwarfs-fm
+    helper.
+  * Replace placeholder cat CLI with dwarfs-fm and GUI apps.
+  * Add dwarfs-fm mount/unmount with sibling directory rule.
+  * Add Caja and Nemo DwarFS context-menu plugins.
+  * Add dwarfs-viewer (metadata, content, integrity tabs).
+  * Add dwarfs-archiver (create/unarchive/convert, open viewer option).
+  * Split Debian packages: dwarfs-fm, viewer, archiver, caja-dwarfs,
+    nemo-dwarfs.
+
+ -- Lenik (谢继雷) <lenik@bodz.net>  Fri, 20 Nov 2026 19:00:02 +0800
+
 dwarfs-utils (0.0.1) unstable; urgency=medium
 
   * Initial release

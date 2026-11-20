@@ -1,2 +1,8 @@
 # Exclude from zfr lint walks (source.long, hardcoded, …)
 *.css
+apps/*/dist/**
+apps/*/src-tauri/target/**
+apps/*/src-tauri/gen/**
+apps/*/node_modules/**
+apps/*/package-lock.json
+apps/*/src-tauri/Cargo.lock

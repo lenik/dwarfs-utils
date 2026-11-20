@@ -1,11 +1,11 @@
-test_exe = executable(
-    'commons_test',
+paths_test = executable(
+    'paths_test',
     [
-        'commons_test.c',
-        '../src/commons.c',
+        'paths_test.c',
+        '../src/paths.c',
     ],
     include_directories: include_directories('../src'),
     install: false,
 )
 
-test('commons', test_exe)
+test('paths', paths_test)

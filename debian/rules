@@ -1,4 +1,25 @@
 #!/usr/bin/make -f
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+# Keep GUI artifacts under the source tree (ignore ambient CARGO_TARGET_DIR).
+unexport CARGO_TARGET_DIR
+
 %:
 	dh $@ --buildsystem=meson --builddirectory=debian/build
+
+override_dh_auto_build:
+	dh_auto_build
+	$(CURDIR)/scripts/build-gui.sh
+
+override_dh_auto_install:
+	dh_auto_install
+	install -d $(CURDIR)/debian/tmp/usr/bin
+	test -x apps/dwarfs-viewer/src-tauri/target/release/dwarfs-viewer
+	test -x apps/dwarfs-archiver/src-tauri/target/release/dwarfs-archiver
+	install -m755 apps/dwarfs-viewer/src-tauri/target/release/dwarfs-viewer \
+		$(CURDIR)/debian/tmp/usr/bin/dwarfs-viewer
+	install -m755 apps/dwarfs-archiver/src-tauri/target/release/dwarfs-archiver \
+		$(CURDIR)/debian/tmp/usr/bin/dwarfs-archiver
+
+# Autotools leftovers must not run after Meson conversion.
+override_dh_autoreconf:

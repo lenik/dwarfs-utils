@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-dwarfs-image">
+    <comment>DwarFS filesystem image</comment>
+    <comment xml:lang="zh_CN">DwarFS 文件系统镜像</comment>
+    <glob pattern="*.dwarfs"/>
+    <glob pattern="*.dwfs"/>
+    <glob pattern="*.dw"/>
+  </mime-type>
+</mime-info>

@@ -7,7 +7,7 @@
 Name:           dwarfs-utils
 Version:        %{version}
 Release:        1%{?dist}
-Summary:        Simple C CLI project template with example app
+Summary:        File-manager helper for DwarFS images
 
 License:        AGPL-3.0-or-later
 URL:            https://github.com/lenik/dwarfs-utils
@@ -18,11 +18,13 @@ BuildRequires:  meson
 BuildRequires:  ninja-build
 BuildRequires:  pkgconf
 BuildRequires:  asciidoctor
+BuildRequires:  pkgconfig(bas-c)
 
 %description
-dwarfs-utils is a Meson-based template for small C command-line utilities
-(no shared/static library packaging). It ships the dwarfs-utils example
-application, AsciiDoc man pages, bash completion, and Debian packaging.
+Desktop suite helper and plugins for DwarFS filesystem images. Ships
+dwarfs-fm, MIME/desktop data, and optional Caja/Nemo extensions. GUI
+apps (dwarfs-viewer, dwarfs-archiver) are built separately via
+scripts/build-gui.sh.
 
 %prep
 %setup -q -n %{name}-%{srcversion}
@@ -32,6 +34,7 @@ meson setup build \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --datadir=%{_datadir} \
+    --libdir=%{_libdir} \
     --mandir=%{_mandir} \
     --sysconfdir=%{_sysconfdir} \
     --localstatedir=%{_localstatedir} \
@@ -42,12 +45,11 @@ meson compile -C build
 meson install -C build --destdir=%{buildroot}
 
 %files
-%{_bindir}/dwarfs-utils
-%{_datadir}/bash-completion/completions/dwarfs-utils
-%{_mandir}/man1/dwarfs-utils.1*
-%{_datadir}/doc/%{name}/
-
+%{_bindir}/dwarfs-fm
+%{_datadir}/bash-completion/completions/dwarfs-fm
+%{_mandir}/man1/dwarfs-fm.1*
+%{_datadir}/mime/*
+%{_datadir}/doc/dwarfs-utils/
 %changelog
-* Thu Aug 20 2026 Lenik <dwarfs-utils@bodz.net>
-- Align spec with debian/control (Meson, AGPL-3.0-or-later).
-- Version comes from `zfr version`, the same method meson.build uses.
+* Fri Nov 20 2026 Lenik <dwarfs-utils@bodz.net>
+- Desktop suite: dwarfs-fm, Viewer/Archiver desktop entries, FM plugins.
